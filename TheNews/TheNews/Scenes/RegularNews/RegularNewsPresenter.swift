@@ -8,13 +8,19 @@
 import Foundation
 
 protocol RegularNewsViewPresenterProtocol: AnyObject {
+    
+    var view: RegularNewsViewControllerProtocol? { get set }
     var countOfNews: Int { get }
     
+    func setup()
+    func viewWillApear()
+    func didDropDownList()
     func getCellModel(by row: Int) -> RegularNewsModel
-    func loadData()
+    func didSelect(at row: Int)
 }
-      
+
 class RegularNewsViewPresenter: RegularNewsViewPresenterProtocol {
+    
     // MARK: - Properties
     weak var view: RegularNewsViewControllerProtocol?
     var countOfNews: Int {
@@ -23,36 +29,64 @@ class RegularNewsViewPresenter: RegularNewsViewPresenterProtocol {
     
     // MARK: - Private Properties
     private var news: [News] = []
+    private var network: ApiClient
     
     // MARK: - Init
-    required init(view: RegularNewsViewControllerProtocol) {
+    required init(view: RegularNewsViewControllerProtocol, apiClient: ApiClient) {
         self.view = view
-        //self.news = news
+        self.network = apiClient
     }
     
     // MARK: - Protocol methods
+    func setup() {
+        view?.setupViews()
+    }
+    
+    func viewWillApear() {
+        loadData()
+    }
+    
     func getCellModel(by row: Int) -> RegularNewsModel {
         let theNews = news[row]
         
-        let dateFormat = "yyyy-MM-dd'T'HH:mm:ss.ssssssZ"
+        let dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ"
         
-        let cell = RegularNewsModel(title: theNews.title, description: theNews.descriptions, publishedDate: theNews.publishedAt.toDate(with: dateFormat), source: theNews.source)
+        let cell = RegularNewsModel(title: theNews.title, description: theNews.description, publishedDate: theNews.publishedAt.toDate(with: dateFormat), source: theNews.source.name)
         
         return cell
     }
     
-    func loadData() {
-        news.append(News(uuid: UUID.init(), title: "These four rechargeable AAAs will replace single-use batteries for $14, more in New Green Deals", descriptions: "While the devices in our homes that use traditional batteries is dwindling with many brands moving to built-in rechargeable alternatives, it never hurts to have a few AAAs on hand for products that require them. Instead of buying single-use batteries that get…", keywords: "", snippet: "", url: "", imageUrl: "", language: "", publishedAt: "2022-02-14T17:33:54.000000Z", source: "dot.com", categories: [], locale: ""))
-        news.append(News(uuid: UUID.init(), title: "News", descriptions: "New news", keywords: "", snippet: "", url: "", imageUrl: "", language: "", publishedAt: "2022-02-14T17:33:54.000000Z", source: "news.com", categories: [], locale: ""))
-        news.append(News(uuid: UUID.init(), title: "News2", descriptions: "new news 2", keywords: "", snippet: "", url: "", imageUrl: "", language: "", publishedAt: "2022-02-14T17:33:54.000000Z", source: "com.com", categories: [], locale: ""))
-        news.append(News(uuid: UUID.init(), title: "News3", descriptions: "new news 3", keywords: "", snippet: "", url: "", imageUrl: "", language: "", publishedAt: "2022-02-14T17:33:54.000000Z", source: "asdas.ru", categories: [], locale: ""))
-        news.append(News(uuid: UUID.init(), title: "News4", descriptions: "new news 3", keywords: "", snippet: "", url: "", imageUrl: "", language: "", publishedAt: "2022-02-14T17:33:54.000000Z", source: "asdas.ru", categories: [], locale: ""))
-        news.append(News(uuid: UUID.init(), title: "News5", descriptions: "new news 3", keywords: "", snippet: "", url: "", imageUrl: "", language: "", publishedAt: "2022-02-14T17:33:54.000000Z", source: "asdas.ru", categories: [], locale: ""))
-        news.append(News(uuid: UUID.init(), title: "News6", descriptions: "new news 3", keywords: "", snippet: "", url: "", imageUrl: "", language: "", publishedAt: "2022-02-14T17:33:54.000000Z", source: "asdas.ru", categories: [], locale: ""))
-        news.append(News(uuid: UUID.init(), title: "News7", descriptions: "new news 3", keywords: "", snippet: "", url: "", imageUrl: "", language: "", publishedAt: "2022-02-14T17:33:54.000000Z", source: "asdas.ru", categories: [], locale: ""))
-        news.append(News(uuid: UUID.init(), title: "News8", descriptions: "new news 3", keywords: "", snippet: "", url: "", imageUrl: "", language: "", publishedAt: "2022-02-14T17:33:54.000000Z", source: "asdas.ru", categories: [], locale: ""))
+    func didDropDownList() {
+        loadData()
+    }
+    
+    func didSelect(at row: Int) {
+        let news = news[row]
+        pushDetailView(with: news)
     }
     
     // MARK: - Private Methods
+    private func loadData() {
+        if news.isEmpty { view?.showLoadingUI() }
+        
+        network.getNews(completion: { result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let news):
+                    print("success")
+                    self.news = news.reversed()
+                    self.view?.refreshList()
+                    
+                case .failure:
+                    print("failure")
+                    self.news = []
+                }
+            }
+        })
+    }
     
+    private func pushDetailView(with news: News) {
+        let vc = DetailNewsViewBuilder(news: news).build()
+        view?.pushDetailView(vc)
+    }
 }

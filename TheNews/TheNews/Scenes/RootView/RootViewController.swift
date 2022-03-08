@@ -20,8 +20,7 @@ class RootViewController: BaseViewController {
 
 extension RootViewController {
     
-    private func setTabBarController() {
-        
+    private func setTabBarController() {        
         let firstVC = RegularNewsViewBuilder().build()
         firstVC.title = "News Today"
         firstVC.tabBarItem = UITabBarItem(title: "", image: UIImage(systemName: "doc.text"), tag: 0)

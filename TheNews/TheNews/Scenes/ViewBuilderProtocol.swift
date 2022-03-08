@@ -7,7 +7,7 @@
 
 import UIKit
 
-protocol ViewBuilderProtocol: AnyObject {
+protocol ViewBuilderProtocol {
     associatedtype ViewType: UIViewController
     
     func build() -> ViewType

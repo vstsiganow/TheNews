@@ -27,7 +27,7 @@ final class RegularNewsTableViewCell: UITableViewCell {
         let lbl = UILabel()
         
         lbl.textColor = .black
-        lbl.font = UIFont.boldSystemFont(ofSize: 12)
+        lbl.font = UIFont.boldSystemFont(ofSize: 14)
         lbl.textAlignment = .center
         lbl.numberOfLines = 0
         
@@ -38,7 +38,7 @@ final class RegularNewsTableViewCell: UITableViewCell {
         let lbl = UILabel()
         
         lbl.textColor = .black
-        lbl.font = UIFont.systemFont(ofSize: 10)
+        lbl.font = UIFont.systemFont(ofSize: 12)
         lbl.textAlignment = .natural
         lbl.numberOfLines = 0
         
@@ -49,7 +49,7 @@ final class RegularNewsTableViewCell: UITableViewCell {
         let lbl = UILabel()
         
         lbl.textColor = .black
-        lbl.font = UIFont.systemFont(ofSize: 10)
+        lbl.font = UIFont.systemFont(ofSize: 11)
         lbl.textAlignment = .left
         
         return lbl
@@ -59,7 +59,7 @@ final class RegularNewsTableViewCell: UITableViewCell {
         let lbl = UILabel()
         
         lbl.textColor = .black
-        lbl.font = UIFont.systemFont(ofSize: 10)
+        lbl.font = UIFont.systemFont(ofSize: 11)
         lbl.textAlignment = .right
         
         return lbl
@@ -73,8 +73,6 @@ final class RegularNewsTableViewCell: UITableViewCell {
     // - MARK: Lifecycle Methods
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-
-        
 
         backgroundColor = .clear
     }
@@ -102,7 +100,7 @@ final class RegularNewsTableViewCell: UITableViewCell {
         
         titleLabel.text = news.title
         descriptionLabel.text = news.description
-        publishedDateLabel.text = news.publishedDate.toString(with: dateFormat)
+        publishedDateLabel.text = news.publishedDate?.toString(with: dateFormat) ?? "Unknown"
         sourceLabel.text = news.source
     }
     
@@ -114,30 +112,26 @@ final class RegularNewsTableViewCell: UITableViewCell {
         addSubview(sourceLabel)
         addSubview(publishedDateLabel)
         
-        conteinerView.anchor(top: topAnchor, left: leftAnchor, bottom: bottomAnchor, right: rightAnchor, paddingTop: 5, paddingLeft: 10, paddingBottom: 5, paddingRight: 10, width: 0, height: 0, enableInsets: false)
+        conteinerView.anchor(top: topAnchor, left: leftAnchor, bottom: bottomAnchor, right: rightAnchor, paddingTop: 5, paddingLeft: 5, paddingBottom: 5, paddingRight: 5, width: 0, height: 0, enableInsets: false)
         
         let stackMainInfoView = UIStackView(arrangedSubviews: [titleLabel, descriptionLabel])
-        stackMainInfoView.distribution = .fillEqually
+        stackMainInfoView.distribution = .equalSpacing
         stackMainInfoView.axis = .vertical
         stackMainInfoView.spacing = 5
-        addSubview(stackMainInfoView)
+        conteinerView.addSubview(stackMainInfoView)
          
         let stackSecondaryInfoView = UIStackView(arrangedSubviews: [publishedDateLabel, sourceLabel])
         stackSecondaryInfoView.distribution = .equalSpacing
         stackSecondaryInfoView.axis = .horizontal
         stackSecondaryInfoView.spacing = 10
-        addSubview(stackSecondaryInfoView)
+        conteinerView.addSubview(stackSecondaryInfoView)
         
         let stackFullInfoView = UIStackView(arrangedSubviews: [stackMainInfoView, stackSecondaryInfoView])
-        stackFullInfoView.distribution = .equalSpacing
+        stackFullInfoView.distribution = .fill
         stackFullInfoView.axis = .vertical
         stackFullInfoView.spacing = 5
-        addSubview(stackFullInfoView)
-        
         conteinerView.addSubview(stackFullInfoView)
         
-        stackFullInfoView.anchor(top: conteinerView.topAnchor, left: conteinerView.leftAnchor, bottom: conteinerView.bottomAnchor, right: conteinerView.rightAnchor, paddingTop: 10, paddingLeft: 10, paddingBottom: 10, paddingRight: 10, width: 0, height: RegularNewsTableViewCell.cellHeight, enableInsets: false)
-        
-        
+        stackFullInfoView.anchor(top: conteinerView.topAnchor, left: conteinerView.leftAnchor, bottom: conteinerView.bottomAnchor, right: conteinerView.rightAnchor, paddingTop: 10, paddingLeft: 5, paddingBottom: 10, paddingRight: 5, width: 0, height: 0, enableInsets: false)
     }
 }

@@ -7,11 +7,13 @@
 
 import UIKit
 
-class RegularNewsViewBuilder: ViewBuilderProtocol {
+struct RegularNewsViewBuilder: ViewBuilderProtocol {
    
     func build() -> RegularNewsViewController {
         let vc = RegularNewsViewController()
-        let presenter = RegularNewsViewPresenter(view: vc)
+        let newtworkManager = NetworkManager()
+        let presenter = RegularNewsViewPresenter(view: vc, apiClient: newtworkManager)
+        
         vc.presenter = presenter
         
         return vc

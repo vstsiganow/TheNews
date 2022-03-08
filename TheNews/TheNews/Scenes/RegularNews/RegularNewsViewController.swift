@@ -8,8 +8,10 @@
 import UIKit
 
 protocol RegularNewsViewControllerProtocol: AnyObject {
-    func refreshView()
-    func loadData()
+    func setupViews()
+    func refreshList()
+    func showLoadingUI()
+    func pushDetailView(_ pushedView: BaseViewController)
 }
 
 class RegularNewsViewController: BaseViewController {
@@ -29,70 +31,108 @@ class RegularNewsViewController: BaseViewController {
         return tableView
     }()
     
-    let loadingView = LoadingView()
+    private let loadingView = LoadingView()
     
     // MARK: - Properties
     var presenter: RegularNewsViewPresenterProtocol!
     
     // MARK: - Private Properties
+    private enum State {
+        case initial, loading, showList
+    }
     
+    private var state: State = .initial {
+        didSet {
+            switch state {
+            case .initial: break
+            case .loading: updateLoadingView(true)
+            case .showList: updateData()
+            }
+        }
+    }
+    
+    private lazy var refreshControl: UIRefreshControl = {
+        let refreshControl = UIRefreshControl()
+        refreshControl.addTarget(self, action: #selector(refreshControlDidPull), for: .valueChanged)
+        refreshControl.tintColor = .white
+        return refreshControl
+    }()
     
     // MARK: - Lifecycle Methods
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupUI()
-        loadData()
         
+        presenter.setup()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
+        presenter.view = self
+        presenter.viewWillApear()
     }
     
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        presenter.view = nil
+    }
     
     // MARK: - Actions
-    
-    // MARK: - Methods
-    private func setupUI() {
-        view.addSubview(tableView)
-        
-        NSLayoutConstraint.activate( [
-            tableView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            tableView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-            tableView.topAnchor.constraint(equalTo: view.topAnchor),
-            tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-            tableView.rightAnchor.constraint(equalTo: view.rightAnchor),
-            tableView.leftAnchor.constraint(equalTo: view.leftAnchor),
-            
-        ])
+    @objc private func refreshControlDidPull() {
+        presenter.didDropDownList()
     }
     
-    func updateLoadingView(with view: UIView, isLoading: Bool) {
+    // MARK: - Private Methods
+    private func setupUI() {
+        view.addSubview(tableView)
+        tableView.refreshControl = refreshControl
+        
+        tableView.anchor(top: view.topAnchor, left: view.leftAnchor, bottom: view.bottomAnchor, right: view.rightAnchor, paddingTop: 0, paddingLeft: 0, paddingBottom: 0, paddingRight: 0, width: 0, height: 0, enableInsets: false)
+    }
+    
+    private func updateData() {
+        updateLoadingView(false)
+        tableView.reloadData()
+        
+        if refreshControl.isRefreshing {
+            refreshControl.endRefreshing()
+        }
+    }
+    
+    private func updateLoadingView(_ isLoading: Bool) {
         guard isLoading else {
-            loadingView.isHidden = !isLoading
+            tableView.isHidden = false
+            loadingView.isHidden = true
             return
         }
+        
+        tableView.isHidden = true
+        loadingView.isHidden = false
         
         loadingView.removeFromSuperview()
         loadingView.isLoading = isLoading
         loadingView.add(to: view)
     }
-    
 }
-
 
 // MARK: - View Protocol
 extension RegularNewsViewController: RegularNewsViewControllerProtocol {
-    func loadData() {
-        presenter.loadData()
+    func setupViews() {
+        setupUI()
     }
     
-    func refreshView() {
-        //presenter.refreshView()
+    func refreshList() {
+        state = .showList
     }
     
+    func showLoadingUI() {
+        state = .loading
+    }
     
+    func pushDetailView(_ pushedView: BaseViewController) {
+        navigationController?.pushViewController(pushedView, animated: true)
+    }
 }
 
 
@@ -103,28 +143,23 @@ extension RegularNewsViewController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        let isEmpty = presenter.countOfNews == 0 ? true : false
-        
-        tableView.isHidden = isEmpty
-        updateLoadingView(with: view, isLoading: isEmpty)
-        
         return presenter.countOfNews
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: RegularNewsTableViewCell.reuseIdentifier, for: indexPath) as! RegularNewsTableViewCell
         let selectedNews = presenter.getCellModel(by: indexPath.row)
+        
         cell.configure(at: selectedNews)
         
         return cell
     }
-    
 }
 
 // MARK: - UITableView Delegate
 extension RegularNewsViewController: UITableViewDelegate {
-        func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-            tableView.deselectRow(at: indexPath, animated: false)
-            
-        }
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        self.tableView.deselectRow(at: indexPath, animated: false)
+        presenter.didSelect(at: indexPath.row)
+    }
 }
