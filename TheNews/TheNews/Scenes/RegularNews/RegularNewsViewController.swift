@@ -135,7 +135,6 @@ extension RegularNewsViewController: RegularNewsViewControllerProtocol {
     }
 }
 
-
 // MARK: - UITableView Data Source
 extension RegularNewsViewController: UITableViewDataSource {
     func numberOfSections(in tableView: UITableView) -> Int {

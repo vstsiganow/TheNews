@@ -10,7 +10,6 @@ import UIKit
 final class LoadingView: UIView {
     static let defaultHeight: CGFloat = 50
     
-    
     private let activityIndicator: UIActivityIndicatorView = {
         let view = UIActivityIndicatorView(style: .medium)
         view.translatesAutoresizingMaskIntoConstraints = false
@@ -26,7 +25,7 @@ final class LoadingView: UIView {
         addSubview(activityIndicator)
         NSLayoutConstraint.activate([
             activityIndicator.centerXAnchor.constraint(equalTo: centerXAnchor),
-            activityIndicator.centerYAnchor.constraint(equalTo: centerYAnchor),
+            activityIndicator.centerYAnchor.constraint(equalTo: centerYAnchor)
         ])
     }
     

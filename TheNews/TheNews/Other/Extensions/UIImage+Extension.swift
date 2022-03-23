@@ -18,7 +18,7 @@ extension UIImage {
         if widthRatio > heightRatio {
             newSize = CGSize(width: size.width * heightRatio, height: size.height * heightRatio)
         } else {
-            newSize = CGSize(width: size.width * widthRatio,  height: size.height * widthRatio)
+            newSize = CGSize(width: size.width * widthRatio, height: size.height * widthRatio)
         }
         
         let rect = CGRect(x: 0, y: 0, width: newSize.width, height: newSize.height)

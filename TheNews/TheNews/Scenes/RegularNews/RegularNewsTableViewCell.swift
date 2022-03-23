@@ -69,7 +69,6 @@ final class RegularNewsTableViewCell: UITableViewCell {
     private var initialLoad = true
     private let dateFormat = "MM-dd-yyyy HH:mm"
     
-    
     // - MARK: Lifecycle Methods
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)

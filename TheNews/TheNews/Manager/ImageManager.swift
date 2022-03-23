@@ -13,9 +13,7 @@ class ImageManager {
     
     // MARK: - Properties
     
-    
     // MARK: - Private Properties
-    
     
     // MARK: - Lifecycle Methods
     private init() {}
@@ -36,6 +34,5 @@ class ImageManager {
     }
     
     // MARK: - Private Methods
-    
     
 }

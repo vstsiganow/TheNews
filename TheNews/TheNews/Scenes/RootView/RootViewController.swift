@@ -31,7 +31,7 @@ extension RootViewController {
         
         let vcArray = [firstVC, secondVC]
         
-        tabBarVC.viewControllers = vcArray.map{BaseNavigationController(rootViewController: $0)}
+        tabBarVC.viewControllers = vcArray.map {BaseNavigationController(rootViewController: $0)}
         
         self.view.addSubview(tabBarVC.view)
     }
