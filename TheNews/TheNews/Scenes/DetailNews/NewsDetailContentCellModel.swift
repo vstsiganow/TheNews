@@ -58,14 +58,24 @@ class NewsDetailContentTableViewCell: UITableViewCell {
         }
         
         initialLoad = false
-        
         contentLabel.text = viewModel.content
     }
     
     // - MARK: Private Methods
     private func setupUI() {
         contentView.addSubview(contentLabel)
-        
-        contentLabel.anchor(top: contentView.topAnchor, left: contentView.leftAnchor, bottom: contentView.bottomAnchor, right: contentView.rightAnchor, paddingTop: 10, paddingLeft: 24, paddingBottom: 10, paddingRight: 24, width: 0, height: 0, enableInsets: false)
+        contentLabel.anchor(
+            top: contentView.topAnchor,
+            left: contentView.leftAnchor,
+            bottom: contentView.bottomAnchor,
+            right: contentView.rightAnchor,
+            paddingTop: 10,
+            paddingLeft: 24,
+            paddingBottom: 10,
+            paddingRight: 24,
+            width: 0,
+            height: 0,
+            enableInsets: false
+        )
     }
 }

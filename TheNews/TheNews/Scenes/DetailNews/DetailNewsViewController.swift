@@ -47,23 +47,45 @@ class DetailNewsViewController: BaseViewController {
     // MARK: - Lifecycle Methods
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         setupViews()
         presenter.setup()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
         presenter.view = self
     }
     
     override func updateViewConstraints() {
         super.updateViewConstraints()
         
-        newsImageView.anchor(top: view.topAnchor, left: view.leftAnchor, bottom: nil, right: view.rightAnchor, paddingTop: -2, paddingLeft: 0, paddingBottom: 0, paddingRight: 0, width: newsImageView.image?.size.width ?? 0, height: newsImageView.image?.size.width ?? headerAndPaddingHeight, enableInsets: false)
+        newsImageView.anchor(
+            top: view.topAnchor,
+            left: view.leftAnchor,
+            bottom: nil,
+            right: view.rightAnchor,
+            paddingTop: -2,
+            paddingLeft: 0,
+            paddingBottom: 0,
+            paddingRight: 0,
+            width: newsImageView.image?.size.width ?? 0,
+            height: newsImageView.image?.size.width ?? headerAndPaddingHeight,
+            enableInsets: false
+        )
         
-        tableView.anchor(top: view.topAnchor, left: view.leftAnchor, bottom: view.bottomAnchor, right: view.rightAnchor, paddingTop: 0, paddingLeft: 0, paddingBottom: 0, paddingRight: 0, width: 0, height: 0, enableInsets: false)
+        tableView.anchor(
+            top: view.topAnchor,
+            left: view.leftAnchor,
+            bottom: view.bottomAnchor,
+            right: view.rightAnchor,
+            paddingTop: 0,
+            paddingLeft: 0,
+            paddingBottom: 0,
+            paddingRight: 0,
+            width: 0,
+            height: 0,
+            enableInsets: false
+        )
     }
     
     // MARK: - Actions
@@ -88,11 +110,9 @@ class DetailNewsViewController: BaseViewController {
     
     private func setupImageView() {
         view.addSubview(newsImageView)
-        
         guard let url = presenter.getImageUrl() else {
             return
         }
-        
         imageManager.fetchImage(url: url, imageView: newsImageView)
     }
 
@@ -120,15 +140,12 @@ extension DetailNewsViewController: UITableViewDataSource {
 }
 
 extension DetailNewsViewController: UITableViewDelegate {
-    
 }
 
 extension DetailNewsViewController: DetailNewsViewControllerProtocol {
     func setupViews() {
         title = "Detail"
-        
         setupTableView()
         setupImageView()
     }
-    
 }
