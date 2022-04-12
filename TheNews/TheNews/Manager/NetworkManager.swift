@@ -10,6 +10,8 @@ import Foundation
 enum ApiError: Error {
     case noData
     case badUrl
+    case noAPIKey
+    case wrongApiKey
 }
 
 protocol ApiClient {
@@ -18,13 +20,20 @@ protocol ApiClient {
 }
 
 class NetworkManager: ApiClient {
-    static let everythingEndpoint = "https://newsapi.org/v2/everything"
-    static let apiKey = ""
+    static let everythingEndpoint = "https://newsdata.io/api/1/news"
+    
+    private let apiKeyName = "NewsAPIKey"
+    private let fileManager = FileManager.shared
     
     func getNews(completion: @escaping (Result<[News], Error>) -> Void) {
         let session = URLSession.shared
         
-        let urlString = "\(NetworkManager.everythingEndpoint)?q=now&apiKey=\(NetworkManager.apiKey)&pageSize=10"
+        guard let apiKey = fileManager.getAPIKey(apiKeyName) else {
+            completion(.failure(ApiError.noAPIKey))
+            return
+        }
+        
+        let urlString = "\(NetworkManager.everythingEndpoint)?apiKey=\(apiKey)&page=1&language=en&category=top"
         
         guard let url = URL(string: urlString) else {
             completion(.failure(ApiError.badUrl))
@@ -38,11 +47,11 @@ class NetworkManager: ApiClient {
                 completion(.failure(ApiError.noData)) // завершаем запрос с ошибкой
                 return
             }
-            
+            print(url)
             do {
                 let decoder = JSONDecoder() // определяем тип декодера данных
                 let response = try decoder.decode(NewsResponse.self, from: data) // пытаемся декодировать полученные данные
-                completion(.success(response.articles)) // завершаем запрос с успехом
+                completion(.success(response.results)) // завершаем запрос с успехом
             } catch(let error) {
                 print(error)
                 completion(.failure(error))  // завершаем запрос с ошибкой
@@ -52,4 +61,5 @@ class NetworkManager: ApiClient {
         
         dataTask.resume()
     }
+    
 }
