@@ -20,8 +20,8 @@ class NewsDetailContentTableViewCell: UITableViewCell {
     private var contentLabel: UILabel = {
         let text = UILabel()
         
-        text.textColor = .white
-        text.font = UIFont.systemFont(ofSize: 17)
+        text.textColor = .black
+        text.font = UIFont.systemFont(ofSize: 12)
         text.textAlignment = .left
         text.numberOfLines = 0
         

@@ -21,15 +21,15 @@ class RootViewController: BaseViewController {
 extension RootViewController {
     
     private func setTabBarController() {        
-        let firstVC = RegularNewsViewBuilder().build()
-        firstVC.title = "News Today"
-        firstVC.tabBarItem = UITabBarItem(title: "", image: UIImage(systemName: "doc.text"), tag: 0)
+        let homeViewController = RegularNewsViewBuilder().build()
+        homeViewController.title = "Latest News"
+        homeViewController.tabBarItem = UITabBarItem(title: "", image: UIImage(systemName: "house"), tag: 0)
         
-        let secondVC = BaseViewController()
-        secondVC.title = "Hot News"
-        secondVC.tabBarItem = UITabBarItem(title: "", image: UIImage(systemName: "flame"), tag: 1)
+        let searchViewController = BaseViewController()
+        searchViewController.title = "Search"
+        searchViewController.tabBarItem = UITabBarItem(title: "", image: UIImage(systemName: "magnifyingglass"), tag: 1)
         
-        let vcArray = [firstVC, secondVC]
+        let vcArray = [homeViewController, searchViewController]
         
         tabBarVC.viewControllers = vcArray.map {BaseNavigationController(rootViewController: $0)}
         

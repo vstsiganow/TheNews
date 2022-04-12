@@ -8,7 +8,6 @@
 import UIKit
 
 extension UIView {
-    
     func anchor (
         top: NSLayoutYAxisAnchor?,
         left: NSLayoutXAxisAnchor?,
@@ -36,24 +35,77 @@ extension UIView {
         translatesAutoresizingMaskIntoConstraints = false
         
         if let top = top {
-              self.topAnchor.constraint(equalTo: top, constant: paddingTop+topInset).isActive = true
+            self.topAnchor.constraint(equalTo: top, constant: paddingTop+topInset).isActive = true
         }
         if let left = left {
             self.leftAnchor.constraint(equalTo: left, constant: paddingLeft).isActive = true
         }
         if let right = right {
-            rightAnchor.constraint(equalTo: right, constant: -paddingRight).isActive = true
+            self.rightAnchor.constraint(equalTo: right, constant: -paddingRight).isActive = true
         }
         if let bottom = bottom {
-            bottomAnchor.constraint(equalTo: bottom, constant: -paddingBottom-bottomInset).isActive = true
+            self.bottomAnchor.constraint(equalTo: bottom, constant: -paddingBottom-bottomInset).isActive = true
         }
         if height != 0 {
-            heightAnchor.constraint(equalToConstant: height).isActive = true
+            self.heightAnchor.constraint(equalToConstant: height).isActive = true
         }
         if width != 0 {
-            widthAnchor.constraint(equalToConstant: width).isActive = true
+            self.widthAnchor.constraint(equalToConstant: width).isActive = true
         }
         
     }
     
+    func equalAnchorsTo(_ view: UIView) {
+        NSLayoutConstraint.activate([
+            self.topAnchor.constraint(equalTo: view.topAnchor),
+            self.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            self.leftAnchor.constraint(equalTo: view.leftAnchor),
+            self.rightAnchor.constraint(equalTo: view.rightAnchor)
+        ])
+    }
+}
+
+extension UIView {
+    func roundedView(to cornerRadius: CGFloat, with corners: UIRectCorner = [.allCorners]) {
+        guard !corners.isEmpty else {
+            return
+        }
+        
+        let corners = UIRectCorner(arrayLiteral: corners)
+        
+        let cornerRadii = CGSize(
+            width: cornerRadius,
+            height: cornerRadius
+        )
+        
+        let maskPath = UIBezierPath(
+            roundedRect: self.bounds,
+            byRoundingCorners: corners,
+            cornerRadii: cornerRadii
+        )
+        
+        let maskLayer = CAShapeLayer()
+        maskLayer.path = maskPath.cgPath
+        maskLayer.frame = self.bounds
+        
+        self.layer.mask = maskLayer
+    }
+}
+
+extension UIView {
+    func blink(duration: TimeInterval, alphaMax: CGFloat = 1.0, alphaMin: CGFloat = 0.0, delay: TimeInterval = 0.0 ) {
+        self.alpha = alphaMin
+        UIView.animate(
+            withDuration: duration,
+            delay: delay,
+            options: [.curveEaseInOut, .autoreverse, .repeat],
+            animations: { [weak self] in self?.alpha = alphaMax },
+            completion: { [weak self] _ in self?.alpha = alphaMin }
+        )
+    }
+    
+    func stopBlink() {
+        layer.removeAllAnimations()
+        alpha = 1.0
+    }
 }

@@ -9,7 +9,7 @@ import Foundation
 
 struct RegularNewsModel: Codable {
     let title: String
-    let description: String?
     let publishedDate: Date?
-    let source: String?
+    let author: [String]?
+    let imageURL: String?
 }

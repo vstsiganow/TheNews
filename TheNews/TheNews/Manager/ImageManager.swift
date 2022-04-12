@@ -20,9 +20,13 @@ class ImageManager {
     
     // MARK: - Methods
     func fetchImage(url: URL, imageView: UIImageView) {
-        DispatchQueue.global().async {
+        let serialQueue = DispatchQueue(label: "com.vstsiganov", qos: .utility)
+        
+        serialQueue.async {
             guard let imageData = try? Data(contentsOf: url) else {
-                imageView.image = UIImage(systemName: "newspaper")
+                DispatchQueue.main.async {
+                    imageView.image = UIImage(systemName: "photo")
+                }
                 return
             }
             

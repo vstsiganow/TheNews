@@ -49,9 +49,9 @@ class RegularNewsViewPresenter: RegularNewsViewPresenterProtocol {
     func getCellModel(by row: Int) -> RegularNewsModel {
         let theNews = news[row]
         
-        let dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ"
+        let dateFormat = "yyyy-MM-dd HH:mm:ss"
         
-        let cell = RegularNewsModel(title: theNews.title, description: theNews.description, publishedDate: theNews.publishedAt.toDate(with: dateFormat), source: theNews.source.name)
+        let cell = RegularNewsModel(title: theNews.title, publishedDate: theNews.publishedAt.toDate(with: dateFormat), author: theNews.creator, imageURL: theNews.imageURL)
         
         return cell
     }
@@ -69,14 +69,15 @@ class RegularNewsViewPresenter: RegularNewsViewPresenterProtocol {
     private func loadData() {
         if news.isEmpty { view?.showLoadingUI() }
         
+        let serialQueue = DispatchQueue(label: "com.vstsiganov", qos: .utility)
+        
         network.getNews(completion: { result in
-            DispatchQueue.main.async {
+            serialQueue.async {
                 switch result {
                 case .success(let news):
                     print("success")
-                    self.news = news.reversed()
+                    self.news = news
                     self.view?.refreshList()
-                    
                 case .failure:
                     print("failure")
                     self.news = []
@@ -86,7 +87,7 @@ class RegularNewsViewPresenter: RegularNewsViewPresenterProtocol {
     }
     
     private func pushDetailView(with news: News) {
-        let vc = DetailNewsViewBuilder(news: news).build()
-        view?.pushDetailView(vc)
+        let detailVC = DetailNewsViewBuilder(news: news).build()
+        view?.pushDetailView(detailVC)
     }
 }

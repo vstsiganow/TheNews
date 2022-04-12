@@ -31,18 +31,18 @@ class DetailNewsViewController: BaseViewController {
         return imageView
     }()
     
-//    private var newsImageConstraint: NSLayoutConstraint = {
-//        let constraint = NSLayoutConstraint()
-//
-//        return constraint
-//    }()
+    private var newsImageHeightConstraint: NSLayoutConstraint?
     
     // MARK: - Priperties
     var presenter: DetailNewsPresenterProtocol!
     
     // MARK: - Private Properties
     private let imageManager = ImageManager.shared
-    private let headerAndPaddingHeight: CGFloat = 260
+    
+    private var headerAndPaddingHeight: CGFloat = 240
+    private lazy var scrollHelper: ScrollViewHelper = {
+        return ScrollViewHelper(scrollView: tableView, offset: -headerAndPaddingHeight)
+    }()
     
     // MARK: - Lifecycle Methods
     override func viewDidLoad() {
@@ -64,20 +64,6 @@ class DetailNewsViewController: BaseViewController {
             left: view.leftAnchor,
             bottom: nil,
             right: view.rightAnchor,
-            paddingTop: -2,
-            paddingLeft: 0,
-            paddingBottom: 0,
-            paddingRight: 0,
-            width: newsImageView.image?.size.width ?? 0,
-            height: newsImageView.image?.size.width ?? headerAndPaddingHeight,
-            enableInsets: false
-        )
-        
-        tableView.anchor(
-            top: view.topAnchor,
-            left: view.leftAnchor,
-            bottom: view.bottomAnchor,
-            right: view.rightAnchor,
             paddingTop: 0,
             paddingLeft: 0,
             paddingBottom: 0,
@@ -86,6 +72,22 @@ class DetailNewsViewController: BaseViewController {
             height: 0,
             enableInsets: false
         )
+        
+        tableView.equalAnchorsTo(view)
+        
+        newsImageHeightConstraint = NSLayoutConstraint(item: newsImageView, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: headerAndPaddingHeight)
+        
+        newsImageView.addConstraint(newsImageHeightConstraint!)
+        
+        var contentInset = tableView.contentInset
+        contentInset.top = headerAndPaddingHeight
+        tableView.contentInset = contentInset
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        
+        print("deinit details")
     }
     
     // MARK: - Actions
@@ -102,20 +104,13 @@ class DetailNewsViewController: BaseViewController {
         tableView.register(NewsDetailInfoTableViewCell.self, forCellReuseIdentifier: NewsDetailInfoTableViewCell.reuseIdentifier)
         tableView.register(NewsDetailContentTableViewCell.self, forCellReuseIdentifier: NewsDetailContentTableViewCell.reuseIdentifier)
         tableView.showsVerticalScrollIndicator = false
-        
-        var contentInset = tableView.contentInset
-        contentInset.top = headerAndPaddingHeight
-        tableView.contentInset = contentInset
     }
     
     private func setupImageView() {
         view.addSubview(newsImageView)
-        guard let url = presenter.getImageUrl() else {
-            return
-        }
+        guard let url = presenter.getImageUrl() else { return }
         imageManager.fetchImage(url: url, imageView: newsImageView)
     }
-
 }
 
 extension DetailNewsViewController: UITableViewDataSource {
@@ -140,6 +135,24 @@ extension DetailNewsViewController: UITableViewDataSource {
 }
 
 extension DetailNewsViewController: UITableViewDelegate {
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        var newHeight = newsImageHeightConstraint!.constant
+        
+        switch scrollHelper.moveDirection {
+        case .up:
+            newHeight = max(0, newHeight - abs(scrollHelper.scrollDifference))
+        case .down:
+            if scrollView.contentOffset.y <= 0 {
+                let tempHeight = min(newHeight + abs(scrollHelper.scrollDifference), view.frame.size.height/2)
+                newHeight = tempHeight
+            }
+        }
+        
+        if newHeight != newsImageHeightConstraint!.constant {
+            newsImageHeightConstraint!.constant = newHeight
+        }
+        scrollHelper.previousScrollOffset = scrollView.contentOffset.y
+    }
 }
 
 extension DetailNewsViewController: DetailNewsViewControllerProtocol {

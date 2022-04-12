@@ -54,14 +54,29 @@ class DetailNewsPresenter: DetailNewsPresenterProtocol {
     }
     
     func getInfoCellModel() -> NewsDetailInfoCellModel {
-        NewsDetailInfoCellModel(title: news.title, date: news.publishedAt.toDate(with: dateFormat), author: news.author, source: news.source.name)
+        NewsDetailInfoCellModel(
+            title: news.title,
+            date: news.publishedAt.toDate(with: dateFormat),
+            authors: news.creator ?? [],
+            source: news.sourceID ?? "Unknown",
+            description: news.description ?? "Empty"
+        )
     }
     
     func getDescriptionCellModel() -> NewsDetailContentCellModel {
-        NewsDetailContentCellModel(content: news.content)
+        var newsContent = ""
+        if let fullDescription = news.fullDescription {
+            newsContent = fullDescription
+        } else if let content = news.content {
+            newsContent = content
+        }
+        
+        return NewsDetailContentCellModel(content: newsContent)
     }
     
     func getImageUrl() -> URL? {
-        return URL(string: news.imageUrl)
+        guard let url = news.imageURL else { return nil}
+        
+        return URL(string: url)
     }
 }

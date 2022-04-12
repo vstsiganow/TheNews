@@ -17,15 +17,15 @@ class BaseNavigationController: UINavigationController {
     }
     
     override var preferredStatusBarStyle: UIStatusBarStyle {
-        return UIStatusBarStyle.lightContent
+        return .darkContent
     }
     
     private func updatedTheme() {
         
         navigationBar.barStyle = UIBarStyle.black
         navigationBar.isTranslucent = false
-        navigationBar.barTintColor = ThemeColor.pureBlack.color
-        navigationBar.tintColor = ThemeColor.pureWhite.color
-        navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white]
+        navigationBar.barTintColor = ThemeColor.showWhite.color
+        navigationBar.tintColor = ThemeColor.darkBlack.color
+        navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.black]
     }
 }

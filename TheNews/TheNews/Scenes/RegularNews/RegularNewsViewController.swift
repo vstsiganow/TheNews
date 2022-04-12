@@ -45,7 +45,7 @@ class RegularNewsViewController: BaseViewController {
         didSet {
             switch state {
             case .initial: break
-            case .loading: updateLoadingView(true)
+            case .loading: updateLoadingView(true, blinking: true)
             case .showList: updateData()
             }
         }
@@ -54,7 +54,7 @@ class RegularNewsViewController: BaseViewController {
     private lazy var refreshControl: UIRefreshControl = {
         let refreshControl = UIRefreshControl()
         refreshControl.addTarget(self, action: #selector(refreshControlDidPull), for: .valueChanged)
-        refreshControl.tintColor = .white
+        refreshControl.tintColor = .black
         return refreshControl
     }()
     
@@ -88,19 +88,21 @@ class RegularNewsViewController: BaseViewController {
         view.addSubview(tableView)
         tableView.refreshControl = refreshControl
         
-        tableView.anchor(top: view.topAnchor, left: view.leftAnchor, bottom: view.bottomAnchor, right: view.rightAnchor, paddingTop: 0, paddingLeft: 0, paddingBottom: 0, paddingRight: 0, width: 0, height: 0, enableInsets: false)
+        tableView.equalAnchorsTo(view)
     }
     
     private func updateData() {
-        updateLoadingView(false)
-        tableView.reloadData()
-        
-        if refreshControl.isRefreshing {
-            refreshControl.endRefreshing()
+        DispatchQueue.main.async {
+            self.updateLoadingView(false, blinking: false)
+            self.tableView.reloadData()
+            
+            if self.refreshControl.isRefreshing {
+                self.refreshControl.endRefreshing()
+            }
         }
     }
     
-    private func updateLoadingView(_ isLoading: Bool) {
+    private func updateLoadingView(_ isLoading: Bool, blinking: Bool) {
         guard isLoading else {
             tableView.isHidden = false
             loadingView.isHidden = true
@@ -112,6 +114,7 @@ class RegularNewsViewController: BaseViewController {
         
         loadingView.removeFromSuperview()
         loadingView.isLoading = isLoading
+        loadingView.isBlinking = blinking
         loadingView.add(to: view)
     }
 }
@@ -160,5 +163,9 @@ extension RegularNewsViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         self.tableView.deselectRow(at: indexPath, animated: false)
         presenter.didSelect(at: indexPath.row)
+    }
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return RegularNewsTableViewCell.cellHeight
     }
 }

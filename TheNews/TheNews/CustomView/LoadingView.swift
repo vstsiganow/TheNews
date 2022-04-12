@@ -12,21 +12,24 @@ final class LoadingView: UIView {
     
     private let activityIndicator: UIActivityIndicatorView = {
         let view = UIActivityIndicatorView(style: .medium)
+        
         view.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            view.widthAnchor.constraint(equalToConstant: defaultHeight),
-            view.heightAnchor.constraint(equalTo: view.widthAnchor)
-        ])
+        view.color = .black
+        view.layer.bounds.size = CGSize(width: defaultHeight, height: defaultHeight)
+        
         return view
     }()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
         addSubview(activityIndicator)
+        
         NSLayoutConstraint.activate([
             activityIndicator.centerXAnchor.constraint(equalTo: centerXAnchor),
             activityIndicator.centerYAnchor.constraint(equalTo: centerYAnchor)
         ])
+        
+        backgroundColor = .gray
     }
     
     required init?(coder: NSCoder) {
@@ -46,16 +49,23 @@ final class LoadingView: UIView {
         }
     }
     
+    var isBlinking: Bool = false {
+        didSet {
+            DispatchQueue.main.async {
+                if self.isBlinking {
+                    self.blink(duration: 2, alphaMax: 0.7, alphaMin: 0.3)
+                } else {
+                    self.stopBlink()
+                }
+            }
+        }
+    }
+    
     func add(to view: UIView) {
         removeFromSuperview()
         translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(self)
-        NSLayoutConstraint.activate([
-            view.topAnchor.constraint(equalTo: topAnchor),
-            view.bottomAnchor.constraint(equalTo: bottomAnchor),
-            view.leftAnchor.constraint(equalTo: leftAnchor),
-            view.rightAnchor.constraint(equalTo: rightAnchor)
-        ])
+        view.equalAnchorsTo(self)
+
     }
-    
 }

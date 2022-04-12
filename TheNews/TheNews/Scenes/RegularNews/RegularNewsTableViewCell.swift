@@ -10,15 +10,15 @@ import UIKit
 final class RegularNewsTableViewCell: UITableViewCell {
     // - MARK: Static Properties
     static let reuseIdentifier = "RegularNewsTableViewCell"
-    static let cellHeight: CGFloat = 100
+    static let cellHeight: CGFloat = 120
+    static let imageSize: CGFloat = 70
     
     // - MARK: UI
     private let conteinerView: UIView = {
-        let view = UIView()
+        let view = UIView(frame: .zero)
         
-        view.layer.cornerRadius = 10
         view.layer.masksToBounds = true
-        view.backgroundColor = .lightGray
+        view.backgroundColor = ThemeColor.showWhite.color
         
         return view
     }()
@@ -34,18 +34,7 @@ final class RegularNewsTableViewCell: UITableViewCell {
         return lbl
     }()
     
-    private let descriptionLabel: UILabel = {
-        let lbl = UILabel()
-        
-        lbl.textColor = .black
-        lbl.font = UIFont.systemFont(ofSize: 12)
-        lbl.textAlignment = .natural
-        lbl.numberOfLines = 0
-        
-        return lbl
-    }()
-    
-    private let publishedDateLabel: UILabel = {
+    private let publishedTimeLabel: UILabel = {
         let lbl = UILabel()
         
         lbl.textColor = .black
@@ -55,18 +44,21 @@ final class RegularNewsTableViewCell: UITableViewCell {
         return lbl
     }()
     
-    private let sourceLabel: UILabel = {
-        let lbl = UILabel()
+    private var newsImageView = UIImageView(frame: CGRect(x: 0, y: 0, width: RegularNewsTableViewCell.imageSize, height: RegularNewsTableViewCell.imageSize))
+    
+    private var infoStackView: UIStackView = {
+        let stack = UIStackView()
         
-        lbl.textColor = .black
-        lbl.font = UIFont.systemFont(ofSize: 11)
-        lbl.textAlignment = .right
+        stack.distribution = .fillProportionally
+        stack.axis = .vertical
+        stack.spacing = 10
         
-        return lbl
+        return stack
     }()
     
     // - MARK: Private Properties
     private var initialLoad = true
+    private let imageManager = ImageManager.shared
     private let dateFormat = "MM-dd-yyyy HH:mm"
     
     // - MARK: Lifecycle Methods
@@ -74,11 +66,6 @@ final class RegularNewsTableViewCell: UITableViewCell {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
         backgroundColor = .clear
-    }
-    
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        
     }
     
     override func prepareForReuse() {
@@ -91,46 +78,106 @@ final class RegularNewsTableViewCell: UITableViewCell {
     
     // - MARK: Methods
     func configure(at news: RegularNewsModel) {
+        titleLabel.text = news.title
+        publishedTimeLabel.text = calculatePublishedTimeInterval(news.publishedDate)
+        
         if initialLoad {
-            setupUI()
+            DispatchQueue.main.async {
+            
+                self.setupViews()
+                self.setupLayout()
+            }
+            
+            if let stringURL = news.imageURL, let url = URL(string: stringURL) {
+                imageManager.fetchImage(url: url, imageView: newsImageView)
+            } else {
+                newsImageView.image = UIImage(systemName: "photo")
+            }
         }
         
         initialLoad = false
-        
-        titleLabel.text = news.title
-        descriptionLabel.text = news.description
-        publishedDateLabel.text = news.publishedDate?.toString(with: dateFormat) ?? "Unknown"
-        sourceLabel.text = news.source
     }
     
     // - MARK: Private Methods
-    private func setupUI() {
+    private func setupViews() {
+        newsImageView.contentMode = .scaleAspectFill
+        
+        DispatchQueue.main.async {
+            self.newsImageView.roundedView(to: 10)
+            self.conteinerView.roundedView(to: 10, with: .bottomLeft)
+        }
+    }
+    
+    private func setupLayout() {
         addSubview(conteinerView)
         addSubview(titleLabel)
-        addSubview(descriptionLabel)
-        addSubview(sourceLabel)
-        addSubview(publishedDateLabel)
+        addSubview(publishedTimeLabel)
+        addSubview(newsImageView)
+        addSubview(infoStackView)
         
-        conteinerView.anchor(top: topAnchor, left: leftAnchor, bottom: bottomAnchor, right: rightAnchor, paddingTop: 5, paddingLeft: 5, paddingBottom: 5, paddingRight: 5, width: 0, height: 0, enableInsets: false)
+        infoStackView.addArrangedSubview(titleLabel)
+        infoStackView.addArrangedSubview(publishedTimeLabel)
         
-        let stackMainInfoView = UIStackView(arrangedSubviews: [titleLabel, descriptionLabel])
-        stackMainInfoView.distribution = .equalSpacing
-        stackMainInfoView.axis = .vertical
-        stackMainInfoView.spacing = 5
-        conteinerView.addSubview(stackMainInfoView)
-         
-        let stackSecondaryInfoView = UIStackView(arrangedSubviews: [publishedDateLabel, sourceLabel])
-        stackSecondaryInfoView.distribution = .equalSpacing
-        stackSecondaryInfoView.axis = .horizontal
-        stackSecondaryInfoView.spacing = 10
-        conteinerView.addSubview(stackSecondaryInfoView)
+        conteinerView.addSubview(infoStackView)
         
-        let stackFullInfoView = UIStackView(arrangedSubviews: [stackMainInfoView, stackSecondaryInfoView])
-        stackFullInfoView.distribution = .fill
-        stackFullInfoView.axis = .vertical
-        stackFullInfoView.spacing = 5
-        conteinerView.addSubview(stackFullInfoView)
+        conteinerView.anchor(
+            top: topAnchor,
+            left: leftAnchor,
+            bottom: bottomAnchor,
+            right: rightAnchor,
+            paddingTop: 20,
+            paddingLeft: 30,
+            paddingBottom: 10,
+            paddingRight: 0,
+            width: 0,
+            height: 0,
+            enableInsets: false
+        )
         
-        stackFullInfoView.anchor(top: conteinerView.topAnchor, left: conteinerView.leftAnchor, bottom: conteinerView.bottomAnchor, right: conteinerView.rightAnchor, paddingTop: 10, paddingLeft: 5, paddingBottom: 10, paddingRight: 5, width: 0, height: 0, enableInsets: false)
+        newsImageView.anchor(
+            top: topAnchor,
+            left: leftAnchor,
+            bottom: nil,
+            right: nil,
+            paddingTop: 10,
+            paddingLeft: 10,
+            paddingBottom: 0,
+            paddingRight: 0,
+            width: RegularNewsTableViewCell.imageSize,
+            height: RegularNewsTableViewCell.imageSize,
+            enableInsets: false
+        )
+        
+        infoStackView.anchor(
+            top: conteinerView.topAnchor,
+            left: conteinerView.leftAnchor,
+            bottom: conteinerView.bottomAnchor,
+            right: conteinerView.rightAnchor,
+            paddingTop: 5,
+            paddingLeft: 70,
+            paddingBottom: 10,
+            paddingRight: 10,
+            width: 0,
+            height: 0,
+            enableInsets: false
+        )
+    }
+    
+    private func calculatePublishedTimeInterval(_ date: Date?) -> String {
+        guard let dateComponent = date?.time(to: Date()) else { return "Recently" }
+        
+        if let years = dateComponent.year, years > 0 {
+            return "\(years) years ago"
+        } else if let months = dateComponent.month, months > 0 {
+            return "\(months) months ago"
+        } else if let days = dateComponent.day, days > 0 {
+            return "\(days) days ago"
+        } else if let hours = dateComponent.hour, hours > 0 {
+            return "\(hours) hours ago"
+        } else if let minutes = dateComponent.minute, minutes > 0 {
+            return "\(minutes) minutes ago"
+        } else {
+            return "Recently"
+        }
     }
 }
