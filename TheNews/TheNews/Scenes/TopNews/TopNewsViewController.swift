@@ -1,5 +1,5 @@
 //
-//  RegularNewsViewController.swift
+//  TopNewsViewController.swift
 //  TheNews
 //
 //  Created by vtsyganov on 09.02.2022.
@@ -7,14 +7,14 @@
 
 import UIKit
 
-protocol RegularNewsViewControllerProtocol: AnyObject {
+protocol TopNewsViewControllerProtocol: AnyObject {
     func setupViews()
     func refreshList()
     func showLoadingUI()
     func pushDetailView(_ pushedView: BaseViewController)
 }
 
-class RegularNewsViewController: BaseViewController {
+class TopNewsViewController: BaseViewController {
     
     // MARK: - UI
     lazy var tableView: UITableView = {
@@ -23,7 +23,7 @@ class RegularNewsViewController: BaseViewController {
         tableView.dataSource = self
         tableView.delegate = self
         tableView.tableFooterView = UIView()
-        tableView.register(RegularNewsTableViewCell.self, forCellReuseIdentifier: RegularNewsTableViewCell.reuseIdentifier)
+        tableView.register(TopNewsTableViewCell.self, forCellReuseIdentifier: TopNewsTableViewCell.reuseIdentifier)
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.separatorStyle = .none
         tableView.backgroundColor = .clear
@@ -34,7 +34,7 @@ class RegularNewsViewController: BaseViewController {
     private let loadingView = LoadingView()
     
     // MARK: - Properties
-    var presenter: RegularNewsViewPresenterProtocol!
+    var presenter: TopNewsViewPresenterProtocol!
     
     // MARK: - Private Properties
     private enum State {
@@ -120,7 +120,7 @@ class RegularNewsViewController: BaseViewController {
 }
 
 // MARK: - View Protocol
-extension RegularNewsViewController: RegularNewsViewControllerProtocol {
+extension TopNewsViewController: TopNewsViewControllerProtocol {
     func setupViews() {
         setupUI()
     }
@@ -139,7 +139,7 @@ extension RegularNewsViewController: RegularNewsViewControllerProtocol {
 }
 
 // MARK: - UITableView Data Source
-extension RegularNewsViewController: UITableViewDataSource {
+extension TopNewsViewController: UITableViewDataSource {
     func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
@@ -149,7 +149,7 @@ extension RegularNewsViewController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: RegularNewsTableViewCell.reuseIdentifier, for: indexPath) as! RegularNewsTableViewCell
+        let cell = tableView.dequeueReusableCell(withIdentifier: TopNewsTableViewCell.reuseIdentifier, for: indexPath) as! TopNewsTableViewCell
         let selectedNews = presenter.getCellModel(by: indexPath.row)
         
         cell.configure(at: selectedNews)
@@ -159,13 +159,13 @@ extension RegularNewsViewController: UITableViewDataSource {
 }
 
 // MARK: - UITableView Delegate
-extension RegularNewsViewController: UITableViewDelegate {
+extension TopNewsViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         self.tableView.deselectRow(at: indexPath, animated: false)
         presenter.didSelect(at: indexPath.row)
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return RegularNewsTableViewCell.cellHeight
+        return TopNewsTableViewCell.cellHeight
     }
 }

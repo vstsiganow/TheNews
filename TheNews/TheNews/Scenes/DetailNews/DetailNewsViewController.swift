@@ -49,15 +49,45 @@ class DetailNewsViewController: BaseViewController {
         super.viewDidLoad()
         setupViews()
         presenter.setup()
+        print("viewDidLoad")
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         presenter.view = self
+        print("viewWillAppear")
+    }
+        
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        
+        print("deinit details")
     }
     
-    override func updateViewConstraints() {
-        super.updateViewConstraints()
+    // MARK: - Actions
+    
+    // MARK: - Methods
+    
+    // MARK: - Private Methods
+    private func setupTableView() {
+        view.addSubview(tableView)
+        
+        tableView.equalAnchorsTo(view)
+        
+        tableView.dataSource = self
+        tableView.delegate = self
+        tableView.estimatedRowHeight = 44
+        tableView.register(NewsDetailInfoTableViewCell.self, forCellReuseIdentifier: NewsDetailInfoTableViewCell.reuseIdentifier)
+        tableView.register(NewsDetailContentTableViewCell.self, forCellReuseIdentifier: NewsDetailContentTableViewCell.reuseIdentifier)
+        tableView.showsVerticalScrollIndicator = false
+        
+        var contentInset = tableView.contentInset
+        contentInset.top = headerAndPaddingHeight
+        tableView.contentInset = contentInset
+    }
+    
+    private func setupImageView() {
+        view.addSubview(newsImageView)
         
         newsImageView.anchor(
             top: view.topAnchor,
@@ -73,41 +103,10 @@ class DetailNewsViewController: BaseViewController {
             enableInsets: false
         )
         
-        tableView.equalAnchorsTo(view)
-        
         newsImageHeightConstraint = NSLayoutConstraint(item: newsImageView, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: headerAndPaddingHeight)
         
         newsImageView.addConstraint(newsImageHeightConstraint!)
         
-        var contentInset = tableView.contentInset
-        contentInset.top = headerAndPaddingHeight
-        tableView.contentInset = contentInset
-    }
-    
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
-        
-        print("deinit details")
-    }
-    
-    // MARK: - Actions
-    
-    // MARK: - Methods
-    
-    // MARK: - Private Methods
-    private func setupTableView() {
-        view.addSubview(tableView)
-        
-        tableView.dataSource = self
-        tableView.delegate = self
-        tableView.estimatedRowHeight = 44
-        tableView.register(NewsDetailInfoTableViewCell.self, forCellReuseIdentifier: NewsDetailInfoTableViewCell.reuseIdentifier)
-        tableView.register(NewsDetailContentTableViewCell.self, forCellReuseIdentifier: NewsDetailContentTableViewCell.reuseIdentifier)
-        tableView.showsVerticalScrollIndicator = false
-    }
-    
-    private func setupImageView() {
-        view.addSubview(newsImageView)
         guard let url = presenter.getImageUrl() else { return }
         imageManager.fetchImage(url: url, imageView: newsImageView)
     }

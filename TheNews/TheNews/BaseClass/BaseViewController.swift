@@ -11,7 +11,7 @@ class BaseViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = ThemeColor.smokeWhite.color
+        view.backgroundColor = Theme.current.mainBackgroundColor
         navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
     }
 
@@ -19,8 +19,10 @@ class BaseViewController: UIViewController {
         super.viewWillAppear(animated)
     }
     
+    /*
     override var preferredStatusBarStyle: UIStatusBarStyle {
         return UIStatusBarStyle.lightContent
     }
+     */
 }
 

@@ -1,5 +1,5 @@
 //
-//  RegularNewsTableViewCell.swift
+//  TopNewsTableViewCell.swift
 //  TheNews
 //
 //  Created by vtsyganov on 14.02.2022.
@@ -7,9 +7,9 @@
 
 import UIKit
 
-final class RegularNewsTableViewCell: UITableViewCell {
+final class TopNewsTableViewCell: UITableViewCell {
     // - MARK: Static Properties
-    static let reuseIdentifier = "RegularNewsTableViewCell"
+    static let reuseIdentifier = "TopNewsTableViewCell"
     static let cellHeight: CGFloat = 120
     static let imageSize: CGFloat = 70
     
@@ -18,7 +18,7 @@ final class RegularNewsTableViewCell: UITableViewCell {
         let view = UIView(frame: .zero)
         
         view.layer.masksToBounds = true
-        view.backgroundColor = ThemeColor.showWhite.color
+        view.backgroundColor = Theme.current.topNewsBackgroundColor
         
         return view
     }()
@@ -26,7 +26,6 @@ final class RegularNewsTableViewCell: UITableViewCell {
     private let titleLabel: UILabel = {
         let lbl = UILabel()
         
-        lbl.textColor = .black
         lbl.font = UIFont.boldSystemFont(ofSize: 14)
         lbl.textAlignment = .center
         lbl.numberOfLines = 0
@@ -37,14 +36,13 @@ final class RegularNewsTableViewCell: UITableViewCell {
     private let publishedTimeLabel: UILabel = {
         let lbl = UILabel()
         
-        lbl.textColor = .black
         lbl.font = UIFont.systemFont(ofSize: 11)
         lbl.textAlignment = .left
         
         return lbl
     }()
     
-    private var newsImageView = UIImageView(frame: CGRect(x: 0, y: 0, width: RegularNewsTableViewCell.imageSize, height: RegularNewsTableViewCell.imageSize))
+    private var newsImageView = UIImageView(frame: CGRect(x: 0, y: 0, width: TopNewsTableViewCell.imageSize, height: TopNewsTableViewCell.imageSize))
     
     private var infoStackView: UIStackView = {
         let stack = UIStackView()
@@ -77,7 +75,7 @@ final class RegularNewsTableViewCell: UITableViewCell {
     }
     
     // - MARK: Methods
-    func configure(at news: RegularNewsModel) {
+    func configure(at news: TopNewsModel) {
         titleLabel.text = news.title
         publishedTimeLabel.text = calculatePublishedTimeInterval(news.publishedDate)
         
@@ -143,8 +141,8 @@ final class RegularNewsTableViewCell: UITableViewCell {
             paddingLeft: 10,
             paddingBottom: 0,
             paddingRight: 0,
-            width: RegularNewsTableViewCell.imageSize,
-            height: RegularNewsTableViewCell.imageSize,
+            width: TopNewsTableViewCell.imageSize,
+            height: TopNewsTableViewCell.imageSize,
             enableInsets: false
         )
         
@@ -164,8 +162,7 @@ final class RegularNewsTableViewCell: UITableViewCell {
     }
     
     private func calculatePublishedTimeInterval(_ date: Date?) -> String {
-        guard let dateComponent = date?.time(to: Date()) else { return "Recently" }
-        
+        guard let dateComponent = date?.intervalComponents(to: Date()) else { return "Recently" }
         if let years = dateComponent.year, years > 0 {
             return "\(years) years ago"
         } else if let months = dateComponent.month, months > 0 {

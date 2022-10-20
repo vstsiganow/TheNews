@@ -12,7 +12,7 @@ class BaseTabBarController: UITabBarController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        tabBar.barTintColor = ThemeColor.smokeWhite.color
-        tabBar.tintColor = ThemeColor.darkBlack.color
+        //tabBar.barTintColor = ThemeColor.smokeWhite.color
+        //tabBar.tintColor = ThemeColor.darkBlack.color
     }
 }

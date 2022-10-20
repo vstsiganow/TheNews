@@ -33,10 +33,10 @@ class NewsDetailInfoTableViewCell: UITableViewCell {
     private var titleLabel: UILabel = {
         let text = UILabel()
         
-        text.font = UIFont.systemFont(ofSize: 16, weight: UIFont.Weight.semibold)
+        text.font = .systemFont(ofSize: 16, weight: UIFont.Weight.semibold)
         text.textAlignment = .left
         text.numberOfLines = 0
-        text.textColor = .black
+        //text.textColor = .black
         
         return text
     }()
@@ -44,8 +44,8 @@ class NewsDetailInfoTableViewCell: UITableViewCell {
     private var dateLabel: UILabel = {
         let text = UILabel()
         
-        text.textColor = .black
-        text.font = UIFont.systemFont(ofSize: 12)
+        //text.textColor = .black
+        text.font = .systemFont(ofSize: 12)
         text.textAlignment = .right
         text.numberOfLines = 0
         
@@ -55,8 +55,8 @@ class NewsDetailInfoTableViewCell: UITableViewCell {
     private var authorLabel: UILabel = {
         let text = UILabel()
         
-        text.textColor = .black
-        text.font = UIFont.systemFont(ofSize: 12)
+        //text.textColor = .black
+        text.font = .systemFont(ofSize: 12)
         text.textAlignment = .left
         text.numberOfLines = 0
         
@@ -66,8 +66,8 @@ class NewsDetailInfoTableViewCell: UITableViewCell {
     private var sourceLabel: UILabel = {
         let text = UILabel()
         
-        text.textColor = .gray
-        text.font = UIFont.systemFont(ofSize: 14, weight: UIFont.Weight.heavy)
+        //text.textColor = .gray
+        text.font = .systemFont(ofSize: 14, weight: UIFont.Weight.heavy)
         text.textAlignment = .left
         text.numberOfLines = 0
         
@@ -77,7 +77,7 @@ class NewsDetailInfoTableViewCell: UITableViewCell {
     private let descriptionLabel: UILabel = {
         let text = UILabel()
         
-        text.textColor = .black
+        //text.textColor = .black
         text.font = UIFont.systemFont(ofSize: 12)
         text.textAlignment = .natural
         text.numberOfLines = 0

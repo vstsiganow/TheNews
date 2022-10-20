@@ -1,5 +1,5 @@
 //
-//  RegularNewsPresenter.swift
+//  TopNewsViewPresenter.swift
 //  TheNews
 //
 //  Created by vtsyganov on 09.02.2022.
@@ -7,22 +7,22 @@
 
 import Foundation
 
-protocol RegularNewsViewPresenterProtocol: AnyObject {
+protocol TopNewsViewPresenterProtocol: AnyObject {
     
-    var view: RegularNewsViewControllerProtocol? { get set }
+    var view: TopNewsViewControllerProtocol? { get set }
     var countOfNews: Int { get }
     
     func setup()
     func viewWillApear()
     func didDropDownList()
-    func getCellModel(by row: Int) -> RegularNewsModel
+    func getCellModel(by row: Int) -> TopNewsModel
     func didSelect(at row: Int)
 }
 
-class RegularNewsViewPresenter: RegularNewsViewPresenterProtocol {
+class TopNewsViewPresenter: TopNewsViewPresenterProtocol {
     
     // MARK: - Properties
-    weak var view: RegularNewsViewControllerProtocol?
+    weak var view: TopNewsViewControllerProtocol?
     var countOfNews: Int {
         news.count
     }
@@ -32,7 +32,7 @@ class RegularNewsViewPresenter: RegularNewsViewPresenterProtocol {
     private var network: ApiClient
     
     // MARK: - Init
-    required init(view: RegularNewsViewControllerProtocol, apiClient: ApiClient) {
+    required init(view: TopNewsViewControllerProtocol, apiClient: ApiClient) {
         self.view = view
         self.network = apiClient
     }
@@ -46,12 +46,12 @@ class RegularNewsViewPresenter: RegularNewsViewPresenterProtocol {
         loadData()
     }
     
-    func getCellModel(by row: Int) -> RegularNewsModel {
+    func getCellModel(by row: Int) -> TopNewsModel {
         let theNews = news[row]
         
         let dateFormat = "yyyy-MM-dd HH:mm:ss"
         
-        let cell = RegularNewsModel(title: theNews.title, publishedDate: theNews.publishedAt.toDate(with: dateFormat), author: theNews.creator, imageURL: theNews.imageURL)
+        let cell = TopNewsModel(title: theNews.title, publishedDate: theNews.publishedAt.toDate(with: dateFormat), author: theNews.creator, imageURL: theNews.imageURL)
         
         return cell
     }
@@ -88,6 +88,7 @@ class RegularNewsViewPresenter: RegularNewsViewPresenterProtocol {
     
     private func pushDetailView(with news: News) {
         let detailVC = DetailNewsViewBuilder(news: news).build()
+        print(news)
         view?.pushDetailView(detailVC)
     }
 }
